@@ -30,7 +30,7 @@ $(document).ready(function () {
                 },
             )
             .prop('disabled', true),
-            
+
     );
 
     const $genLabelButton = $(`#${GEN_LABEL_BUTTON_ID}`);
@@ -47,14 +47,14 @@ $(document).ready(function () {
     // Attach input listeners for ptid and visit num field
     $ptidInputField.on('input', () => handleOnFieldChange());
     $visitNumInputField.on('input', () => handleOnFieldChange());
-    
+
     // Call function to enable/disable the button on load
     handleOnFieldChange();
 
     // Attach click listener to the "Generate biospecimens label"  button
     $genLabelButton.on('click', () => {
         // Make an ajax call to generate labels
-        TLG.ajax("generateTubeLabels", {'ptid': $ptidInputField.val(), 'visit_num': $visitNumInputField.val()}).then(r => {
+        TLG.ajax("generateTubeLabels", { 'ptid': $ptidInputField.val(), 'visit_num': $visitNumInputField.val() }).then(r => {
             labels = JSON.parse(r);
             zplLabels = [];
             labels.forEach((item, index) => {
@@ -62,13 +62,20 @@ $(document).ready(function () {
                 zplLabels.push(genrateZplLabel(ptid, type, barcode_str));
             });
             zplSheet = zplLabels.reduce((acc, curr) => (acc += curr), "");
-            downloadMultiLabelPdf(zplSheet);
+            // code from https://gist.github.com/Lakerfield/1b77b03789525c9d0f13ddfeedee2efa
+            var printWindow = window.open();
+            printWindow.document.open('text/plain')
+            printWindow.document.write(zplSheet);
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+            printWindow.close();
         });
     });
 });
 
 const genrateZplLabel = (ptid, type, barcode) => {
-    zplLabel = `^XA^PW380^LL192^FO24,48^A0N,30,24^FD${barcode}^FS^FO30,78^BQN,2,2,Q,7^FDQA,${barcode}^FS^FO96,108^A0N,30,24^FD${ptid} ${type}^FS^FO300,60^BQN,2,2,Q,7^FDQA,${barcode}^FS^XZ`;
+    zplLabel = `^XA^PW382^LL190^FO26,30^A0N,30,24^FD${barcode}^FS^FO32,60^BQN,2,2,Q,7^FDQA,${barcode}^FS^FO98,90^A0N,30,24^${ptid} ${type}^FS^FO315,45^BQN,2,2,Q,7^FDQA,${barcode}^FS^XZ`;
     return zplLabel;
 };
 
