@@ -1,7 +1,7 @@
 {
-    "name": "name",
-    "tt_name": "name",
-    "description": "description",
+    "name": "REDCap Zebra Label Printer",
+    "tt_name": "module_name",
+    "description": "This module allows you to generate and print biospecimen tube labels directly from REDCap using Zebra printers. It supports the Zebra Browser Print App for seamless printing.",
     "tt_description": "description",
     "documentation": "doc_path",
     "tt_documentation": "doc_path",
