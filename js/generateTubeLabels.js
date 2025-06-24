@@ -10,22 +10,25 @@ $(document).ready(function () {
     const zebraLabelPrintHelpUrl = module.tt('zebraLabelPrintHelpUrl')
 
     if (hasMultipleTags) {
-        alert(`Multiple fields on this form have the ${tagId} tag. The button will only be applied to the first field.`);
+        const alert_multiple_tags = module.tt('alert_multiple_tags');
+        alert(alert_multiple_tags);
     }
 
     const $zebraLabelGenTd = $(`#${zebraLabelGenFieldId}-tr > td:nth-child(2)`);
     const $ptidInputField = $(`#${ptidFieldId}-tr td:nth-child(2) input`);
     const $visitNumInputField = $(`#${visitNumFieldId}-tr td:nth-child(2) input`);
+    const btn_generate_labels = module.tt('btn_generate_labels');
+    const btn_printing_help = module.tt('btn_printing_help');
 
     // Append the "Generate biospecimen labels" button
     $zebraLabelGenTd.append(
         $('<button />')
-            .html('Generate biospecimen labels')
+            .html(btn_generate_labels)
             .attr({
                 type: 'button',
                 id: GEN_LABEL_BUTTON_ID,
                 class: 'btn btn-info btn-sm',
-                'aria-label': 'Generate biospecimen labels'
+                'aria-label': btn_generate_labels
             })
             .prop('disabled', true)
     );
@@ -36,8 +39,8 @@ $(document).ready(function () {
             .addClass('fas fa-question-circle')
             .attr({
                 id: GEN_HELP_BUTTON_ID,
-                title: 'Printing Help',
-                'aria-label': 'Printing Help'
+                title: btn_printing_help,
+                'aria-label': btn_printing_help
             })
     );
 
@@ -49,11 +52,13 @@ $(document).ready(function () {
         // Disable scrolling on the body when the overlay is open
         $('body').css('overflow', 'hidden');
 
+        const btn_close = module.tt('btn_close');
+
         // Create the overlay element
         const $overlay = $('<div />')
             .attr('id', 'helpOverlay')
             .html(`<div id="overlayContent">
-            <button id="closeOverlay"><i class="fa-duotone fa-solid fa-circle-xmark"></i></button>
+            <button id="closeOverlay" aria-label="${btn_close}"><i class="fa-duotone fa-solid fa-circle-xmark"></i></button>
             <iframe src="${zebraLabelPrintHelpUrl}" width="100%" height="100%" frameborder="0"></iframe>
             </div>
         `);
@@ -105,9 +110,10 @@ $(document).ready(function () {
         try {
             const ptid = $ptidInputField.val();
             const visitNum = $visitNumInputField.val();
+            const btn_generating = module.tt('btn_generating');
 
             // Show loading spinner
-            $genLabelButton.prop('disabled', true).text('Generating... ').append('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
+            $genLabelButton.prop('disabled', true).text(`${btn_generating}… `).append('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
 
             // Make an ajax call to generate labels
             const response = await RZLP.ajax("generateTubeLabels", { ptid, visit_num: visitNum });
@@ -119,20 +125,22 @@ $(document).ready(function () {
             if (printerCheckStatus) {
                 const browserPrint = printerStatusDetails;
                 const printStatus = await printTubeLabels(zplSheet, browserPrint);
+                const alert_printing_failed = module.tt('alert_printing_failed');
                 if (!printStatus) {
                     downloadZplFile(zplSheet);
-                    alert("Printing failed. ZPL file is being downloaded.");
+                    alert(alert_printing_failed);
                 }
             } else {
                 alert(printerStatusDetails);
                 return;
             }
         } catch (error) {
+            const alert_error_generating = module.tt('alert_error_generating');
             console.error('Error generating labels:', error);
-            alert('An error occurred while generating labels. Please try again.');
-        }finally {
+            alert(alert_error_generating);
+        } finally {
             // Reset the button text and enable it
-            $genLabelButton.prop('disabled', false).text('Generate biospecimen labels');
+            $genLabelButton.prop('disabled', false).text(btn_generate_labels);
         }
     });
 });
@@ -154,7 +162,8 @@ const downloadZplFile = (zplSheet) => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = 'biospecimen_tube_labels.zpl';
+    const download_filename = RZLP.tt('download_filename');
+    link.download = `${download_filename}.zpl`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -169,18 +178,23 @@ const printerPreCheck = async () => {
             browserPrint.getAvailablePrinters(),
             browserPrint.getDefaultPrinter()
         ]);
+
+        const printer_no_zebra_found = RZLP.tt('printer_no_zebra_found');
         if (!printers.length) {
             return {
                 printerCheckStatus: false,
-                printerStatusDetails: "No Zebra printers found. Please connect to a Zebra printer and try again."
+                printerStatusDetails: printer_no_zebra_found
             };
         }
+
+        const printer_set_default = RZLP.tt('printer_set_default');
         if (!defaultPrinter) {
             return {
                 printerCheckStatus: false,
-                printerStatusDetails: "Please set a default printer in the Zebra Browser Print App settings."
+                printerStatusDetails: printer_set_default
             };
         }
+
         browserPrint.setPrinter(defaultPrinter);
         const printerStatus = await browserPrint.checkPrinterStatus();
         if (printerStatus.isReadyToPrint === true) {
@@ -189,13 +203,19 @@ const printerPreCheck = async () => {
                 printerStatusDetails: browserPrint
             };
         } else {
-            let errorMessage = "An unknown error occurred with the printer. Please check the printer connection and try again.";
+            const printer_unknown_error = RZLP.tt('printer_unknown_error');
+            let errorMessage = printer_unknown_error;
+
             if (printerStatus.errors) {
                 console.error("Printer status error:", printerStatus.errors);
+                const printer_not_connected = RZLP.tt('printer_not_connected');
+                const printer_not_ready_prefix = RZLP.tt('printer_not_ready_prefix');
+                const printer_not_ready_suffix = RZLP.tt('printer_not_ready_suffix');
+
                 if (printerStatus.errors === 'Error: Unknown Error') {
-                    errorMessage = "Printer might not be turned on or connected. Please check and try again.";
+                    errorMessage = printer_not_connected;
                 } else {
-                    errorMessage = "Printer is not ready to print due to: " + printerStatus.errors + ". Please resolve the issue and try again.";
+                    errorMessage = `${printer_not_ready_prefix} ${printerStatus.errors}. ${printer_not_ready_suffix}`;
                 }
             }
             return { printerCheckStatus: false, printerStatusDetails: errorMessage };
@@ -203,10 +223,13 @@ const printerPreCheck = async () => {
     }
     catch (error) {
         console.error("Error checking printer status:", error);
+        const printer_check_zebra_app = RZLP.tt('printer_check_zebra_app');
+        const printer_status_unknown = RZLP.tt('printer_status_unknown');
+
         if (error.message && error.message.includes('Failed to fetch')) {
-            return { printerCheckStatus: false, printerStatusDetails: "Please check if the Zebra Browser Print App is running and try again." };
+            return { printerCheckStatus: false, printerStatusDetails: printer_check_zebra_app };
         } else {
-            return { printerCheckStatus: false, printerStatusDetails: "Unknown Error Encountered while checking printer status." };
+            return { printerCheckStatus: false, printerStatusDetails: printer_status_unknown };
         }
     }
 };
@@ -214,7 +237,8 @@ const printerPreCheck = async () => {
 // Load Zebra Browser Print Wrapper and print the labels
 const printTubeLabels = async (zpl, browserPrintObj) => {
     try {
-        alert("Printing labels...");
+        const alert_printing_labels = RZLP.tt('alert_printing_labels');
+        alert(alert_printing_labels);
         await browserPrintObj.print(zpl);
         return true;
     } catch (error) {

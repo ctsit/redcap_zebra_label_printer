@@ -75,3 +75,11 @@ The software was developed and tested with the Zebra ZD611, but any Zebra printe
 
 The barcode string, e.g. `110001-03-S-1` has the following components
 > ![](./img/barcode_breakdown.png)
+
+### Developer Notes
+To run the webpack build process, you will need to have [Node.js](https://nodejs.org/) installed. Once installed, run the following commands in the module directory:
+
+```bash
+npm install
+npm run build
+```

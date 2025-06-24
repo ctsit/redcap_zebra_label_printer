@@ -27,7 +27,7 @@ $(document).ready(function () {
         let markerElement = $(result[0]).text();
 
         // Add the action tag
-        const tagDescription = 'Adds a "Generate biospecimen labels" button to be displayed on the field. If multiple tags are assigned on a form only the first field will have the button applied.';
+        const tagDescription = RZLP.tt('action_tag_description_designer');
         prependActionTag($popup, markerElement, zebraLabelGenTag, tagDescription);
     });
 
