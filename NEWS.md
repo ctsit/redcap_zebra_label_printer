@@ -1,3 +1,8 @@
+# redcap_zebra_label_printer 0.4.0 (released 2025-06-24)
+- Add i18n support (@saipavan10-git, @pbchase, #14, #16, #22)
+- Add CITATION.cff (@pbchase)
+- Update README with DOI and language updates (@pbchase)
+
 # redcap_zebra_label_printer 0.3.0 (released 2025-01-21)
 - Rename module to redcap_zebra_label_printer (@saipavan10-git, #20, #21)
 
