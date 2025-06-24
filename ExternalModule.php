@@ -77,6 +77,8 @@ class ExternalModule extends AbstractExternalModule
         if (Validate::pageIs(Page::ONLINE_DESIGNER) && $project_id) {
             // Append the action tag in the designer view
             $this->initializeJavascriptModuleObject();
+            // Add language strings to the javascript object
+            $this->tt_transferToJavascriptModuleObject();
             $this->tt_addToJavascriptModuleObject('zebraLabelGenTag', self::ZEBRA_LABEL_PRINTER_TAG);
             $this->includeJs('js/addActionTag.js');
         } else if (Validate::pageIsIn(array(Page::DATA_ENTRY, Page::SURVEY, Page::SURVEY_THEME)) && isset($_GET['id'])) {
@@ -101,6 +103,8 @@ class ExternalModule extends AbstractExternalModule
 
             if (!empty($zebraLabelGenFields)) {
                 $this->initializeJavascriptModuleObject();
+                // Add language strings to the javascript object
+                $this->tt_transferToJavascriptModuleObject();
                 $emData = ["tagId" => self::ZEBRA_LABEL_PRINTER_TAG, "hasMultipleTags" => count($zebraLabelGenFields) > 1, "zebraLabelGenFieldId" => $zebraLabelGenFields[0], "ptidFieldId" => $this->getProjectSetting(self::PTID_FIELD), "visitNumFieldId" => $this->getProjectSetting(self::VISIT_NUM_FIELD)];
                 $this->tt_addToJavascriptModuleObject('emData', $emData);
                 $this->includeJs('js/generateTubeLabels.bundle.js');
@@ -108,7 +112,8 @@ class ExternalModule extends AbstractExternalModule
 
             // Add the help page link to the javascript object
             $this->initializeJavascriptModuleObject();
-            $zebraLabelPrintHelpUrl = $this->getUrl("assets/printing_help.md");
+            $help_file_path = $this->tt('printing_help_path');
+            $zebraLabelPrintHelpUrl = $this->getUrl($help_file_path);
             $this->tt_addToJavascriptModuleObject('zebraLabelPrintHelpUrl', $zebraLabelPrintHelpUrl);
             // Include css for the module
             $this->includeCss("assets/module.css");
