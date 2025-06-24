@@ -4,8 +4,8 @@
 cff-version: 1.2.0
 title: REDCap Zebra Label Printer
 message:
-  If you use this software, please cite it using the
-  metadata from this file.
+  If you use this software, please cite it using the metadata
+  in CITATIONS.cff or https://doi.org/10.5281/zenodo.15185893
 type: software
 authors:
   - family-names: Chase
@@ -26,8 +26,8 @@ authors:
     given-names: Michael
     affiliation: University of Florida
     orcid: https://orcid.org/0000-0002-5790-4268
-  - family-names: Sai Pavan
-    given-names: Kamma
+  - family-names: Kamma
+    given-names: Sai Pavan
     email: saipavankamma@ufl.edu
     affiliation: University of Florida
     orcid: https://orcid.org/0009-0004-4619-0409
