@@ -74,14 +74,7 @@ class ExternalModule extends AbstractExternalModule
 
     function redcap_every_page_top($project_id)
     {
-        if (Validate::pageIs(Page::ONLINE_DESIGNER) && $project_id) {
-            // Append the action tag in the designer view
-            $this->initializeJavascriptModuleObject();
-            // Add language strings to the javascript object
-            $this->tt_transferToJavascriptModuleObject();
-            $this->tt_addToJavascriptModuleObject('zebraLabelGenTag', self::ZEBRA_LABEL_PRINTER_TAG);
-            $this->includeJs('js/addActionTag.js');
-        } else if (Validate::pageIsIn(array(Page::DATA_ENTRY, Page::SURVEY, Page::SURVEY_THEME)) && isset($_GET['id'])) {
+        if (Validate::pageIsIn(array(Page::DATA_ENTRY, Page::SURVEY, Page::SURVEY_THEME)) && isset($_GET['id'])) {
             // Handle the logic of the action tag on data entry
             global $Proj;
             $instrument = $_GET['page'];
