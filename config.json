@@ -54,6 +54,13 @@
             }
         ]
     },
+    "action-tags": [
+        {
+            "tag": "@ZEBRA-LABEL-PRINTER",
+            "description": "Adds a \"Generate biospecimen labels\" button to be displayed on the field. If multiple tags are assigned on a form only the first field will have the button applied.",
+            "tt_description": "action_tag_description_designer"
+        }
+    ],
     "auth-ajax-actions": ["generateTubeLabels", "getDataForPtidDropdown", "getDataForVisitDropdown"],
     "compatibility": {
         "redcap-version-min": "14.0.2",
