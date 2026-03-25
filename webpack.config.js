@@ -9,15 +9,4 @@ module.exports = {
         path: path.resolve(__dirname, 'js'),
     },
     mode: 'production',
-    module: {
-        rules: [
-            {
-                test: /\.js$/,
-                exclude: /node_modules/,
-                use: {
-                    loader: 'babel-loader',
-                },
-            },
-        ],
-    },
 };
