@@ -58,7 +58,7 @@ You will need to configure the module for your project. At a minimum you need to
 ### Printer setup
 
 1. Attach the Zebra printer to a computer with access to REDCap.
-2. Load labels into you Zebra printer.
+2. Load labels into your Zebra printer.
 3. Follow the __Quick Start Guide__ provided with your Zebra printer to complete the setup. Ensure you finish all steps up to __Step 9__, which includes __Smart Calibration__.
 4. Download and install the Zebra [Browser Print app](https://www.zebra.com/gb/en/support-downloads/software/printer-software/browser-print.html#browser-print).
 5. Follow the steps described in the module help button mentioned above under _REDCap Setup_
@@ -68,6 +68,10 @@ You will need to configure the module for your project. At a minimum you need to
 Access the form where the _Generate Biospecimen Labels_ button is displayed. The field will be grayed out if the visit number field is missing or blank. Key in the visit number then press the "Generate biospecimen labels" button. This will open a print dialog. Acknowledge it and printing should start immediately. If instead you get an error, note the error, attempt to address and retry printing. If that does not rectify the error, access the module's setup and debugging help via the "?" button next to the _Generate Biospecimen Labels_ button.
 
 > ![](./img/help_button.png)
+
+### Test printing
+
+If the action tag is set to the value _test_ (i.e., `@ZEBRA-LABEL-PRINTER="test"`) a second _Test Print_ button will appear adjacent to the normal _Generate Biospecimen Labels_ button. This button will print a vastly reduced set of labels. This tests the printer connectivity and alignment and produces a small set of labels for inspection. This feature is intended for use only in testing environments.
 
 ## Notes
 

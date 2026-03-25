@@ -35,9 +35,19 @@ class ExternalModule extends AbstractExternalModule
     const PTID_FIELD = "ptid_field";
     const VISIT_NUM_FIELD = "visit_num_field";
 
+    private function getTagValue(string $targetTag, ?string $tags): ?string
+    {
+        if (!isset($tags)) return null;
+        $pattern = '/(?:^|\s)' . preg_quote($targetTag, '/') . '(?:=["\']?([^"\'\\s]*)["\']?)?(?:\s|$)/';
+        if (preg_match($pattern, $tags, $matches)) {
+            return $matches[1] ?? '';
+        }
+        return null;
+    }
+
     private function containsTag(string $targetTag, ?string $tags): bool
     {
-        return (isset($tags)) ? in_array($targetTag, explode(' ', $tags)) : false;
+        return $this->getTagValue($targetTag, $tags) !== null;
     }
 
 
@@ -89,7 +99,9 @@ class ExternalModule extends AbstractExternalModule
                 $this->initializeJavascriptModuleObject();
                 // Add language strings to the javascript object
                 $this->tt_transferToJavascriptModuleObject();
-                $emData = ["tagId" => self::ZEBRA_LABEL_PRINTER_TAG, "hasMultipleTags" => count($zebraLabelGenFields) > 1, "zebraLabelGenFieldId" => $zebraLabelGenFields[0], "ptidFieldId" => $this->getProjectSetting(self::PTID_FIELD), "visitNumFieldId" => $this->getProjectSetting(self::VISIT_NUM_FIELD)];
+                $firstFieldTags = $Proj->metadata[$zebraLabelGenFields[0]]['misc'];
+                $tagValue = $this->getTagValue(self::ZEBRA_LABEL_PRINTER_TAG, $firstFieldTags);
+                $emData = ["tagId" => self::ZEBRA_LABEL_PRINTER_TAG, "hasMultipleTags" => count($zebraLabelGenFields) > 1, "zebraLabelGenFieldId" => $zebraLabelGenFields[0], "ptidFieldId" => $this->getProjectSetting(self::PTID_FIELD), "visitNumFieldId" => $this->getProjectSetting(self::VISIT_NUM_FIELD), "tagValue" => $tagValue];
                 $this->tt_addToJavascriptModuleObject('emData', $emData);
                 $this->includeJs('js/generateTubeLabels.bundle.js');
             }
