@@ -14,7 +14,7 @@ $(document).ready(function () {
         alert(alert_multiple_tags);
     }
 
-    const $zebraLabelGenTd = $(`#${zebraLabelGenFieldId}-tr > td:nth-child(2)`);
+    const $zebraLabelGenTd = $(`#${zebraLabelGenFieldId}-tr > td:last-child`);
     const $ptidInputField = $(`#${ptidFieldId}-tr td:nth-child(2) input`);
     const $visitNumInputField = $(`#${visitNumFieldId}-tr td:nth-child(2) input`);
     const btn_generate_labels = module.tt('btn_generate_labels');

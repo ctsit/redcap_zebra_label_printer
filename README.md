@@ -27,7 +27,7 @@ The labels are printed in a long strip.
 
 > ![](./img/DFP-103_sample_6_labels.png)
 
-The module adds a button under REDCap form field to allow printing of a 23-label set for that record and event. The `@ZEBRA-LABEL-PRINTER` action tag positions the button under any field where it is used.
+The module adds a button to a REDCap form field to allow printing of a 23-label set for that record and event. The `@ZEBRA-LABEL-PRINTER` action tag positions the button on any field where it is used.
 
 > ![](./img/gen_label_button.png)
 

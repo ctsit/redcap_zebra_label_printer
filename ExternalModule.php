@@ -40,13 +40,6 @@ class ExternalModule extends AbstractExternalModule
         return (isset($tags)) ? in_array($targetTag, explode(' ', $tags)) : false;
     }
 
-    private function isXTypeField(array $field): bool
-    {
-        $isTextField = $field['element_type'] == 'text';
-        return $isTextField;
-        // $hasDateValidation = in_array($field['element_validation_type'], Validate::$date_validations);
-        // return $isTextField && $hasDateValidation;
-    }
 
     function redcap_module_ajax($action, $payload)
     {
@@ -85,12 +78,10 @@ class ExternalModule extends AbstractExternalModule
             // the first field will have the button appended to it.
             foreach (array_keys($Proj->forms[$instrument]['fields']) as $field_name) {
                 $field = $Proj->metadata[$field_name];
-                if ($this->isXTypeField($field)) {
-                    $action_tags = $field['misc'];
+                $action_tags = $field['misc'];
 
-                    if ($this->containsTag(self::ZEBRA_LABEL_PRINTER_TAG, $action_tags)) {
-                        array_push($zebraLabelGenFields, $field_name);
-                    }
+                if ($this->containsTag(self::ZEBRA_LABEL_PRINTER_TAG, $action_tags)) {
+                    array_push($zebraLabelGenFields, $field_name);
                 }
             }
 
