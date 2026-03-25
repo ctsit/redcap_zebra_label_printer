@@ -170,22 +170,17 @@ class ExternalModule extends AbstractExternalModule
             [
                 'name' => 'buffy coat',
                 'symbol' => 'BC',
-                'count' => 5,
+                'count' => 3,
             ],
             [
                 'name' => 'paxgene',
                 'symbol' => 'PG',
-                'count' => 5,
+                'count' => 2,
             ],
             [
                 'name' => 'plasma',
                 'symbol' => 'P',
-                'count' => 5,
-            ],
-            [
-                'name' => 'serum',
-                'symbol' => 'S',
-                'count' => 5,
+                'count' => 25,
             ]
         ];
 
