@@ -5,8 +5,9 @@ import ZebraBrowserPrintWrapper from 'zebra-browser-print-wrapper-v2';
 $(document).ready(function () {
     const module = RZLP;
     const GEN_LABEL_BUTTON_ID = 'gen-bio-labels';
+    const TEST_PRINT_BUTTON_ID = 'test-print-bio-labels';
     const GEN_HELP_BUTTON_ID = 'help-bio-labels';
-    const { tagId, hasMultipleTags, zebraLabelGenFieldId, ptidFieldId, visitNumFieldId } = module.tt('emData');
+    const { tagId, hasMultipleTags, zebraLabelGenFieldId, ptidFieldId, visitNumFieldId, tagValue } = module.tt('emData');
     const zebraLabelPrintHelpUrl = module.tt('zebraLabelPrintHelpUrl')
 
     if (hasMultipleTags) {
@@ -14,10 +15,11 @@ $(document).ready(function () {
         alert(alert_multiple_tags);
     }
 
-    const $zebraLabelGenTd = $(`#${zebraLabelGenFieldId}-tr > td:nth-child(2)`);
+    const $zebraLabelGenTd = $(`#${zebraLabelGenFieldId}-tr > td:last-child`);
     const $ptidInputField = $(`#${ptidFieldId}-tr td:nth-child(2) input`);
     const $visitNumInputField = $(`#${visitNumFieldId}-tr td:nth-child(2) input`);
     const btn_generate_labels = module.tt('btn_generate_labels');
+    const btn_test_print = module.tt('btn_test_print');
     const btn_printing_help = module.tt('btn_printing_help');
 
     // Append the "Generate biospecimen labels" button
@@ -33,6 +35,21 @@ $(document).ready(function () {
             .prop('disabled', true)
     );
 
+    // Append the "Test print" button only when the action tag value is "test"
+    if (tagValue === 'test') {
+        $zebraLabelGenTd.append(
+            $('<button />')
+                .html(btn_test_print)
+                .attr({
+                    type: 'button',
+                    id: TEST_PRINT_BUTTON_ID,
+                    class: 'btn btn-secondary btn-sm',
+                    'aria-label': btn_test_print
+                })
+                .prop('disabled', true)
+        );
+    }
+
     // Append the "REDCap Zebra Label Printer help icon"
     $zebraLabelGenTd.append(
         $('<i />')
@@ -45,6 +62,7 @@ $(document).ready(function () {
     );
 
     const $genLabelButton = $(`#${GEN_LABEL_BUTTON_ID}`);
+    const $testPrintButton = $(`#${TEST_PRINT_BUTTON_ID}`);
     const $helpButton = $(`#${GEN_HELP_BUTTON_ID}`);
 
     // Event listener for help button click
@@ -90,12 +108,10 @@ $(document).ready(function () {
     });
 
     const handleOnFieldChange = () => {
-        // if ptid and visit num have values then enable the button
-        if ($ptidInputField.val() && $visitNumInputField.val()) {
-            $genLabelButton.prop('disabled', false);
-        } else {
-            $genLabelButton.prop('disabled', true);
-        }
+        // if ptid and visit num have values then enable the buttons
+        const enabled = !!($ptidInputField.val() && $visitNumInputField.val());
+        $genLabelButton.prop('disabled', !enabled);
+        $testPrintButton.prop('disabled', !enabled);
     };
 
     // Attach input listeners for ptid and visit num field
@@ -105,19 +121,33 @@ $(document).ready(function () {
     // Call function to enable/disable the button on load
     handleOnFieldChange();
 
-    // Attach click listener to the "Generate biospecimen labels" button
-    $genLabelButton.on('click', async () => {
+    const handlePrintClick = async ($button, buttonLabel, testPrint = false) => {
         try {
             const ptid = $ptidInputField.val();
             const visitNum = $visitNumInputField.val();
             const btn_generating = module.tt('btn_generating');
 
-            // Show loading spinner
-            $genLabelButton.prop('disabled', true).text(`${btn_generating}… `).append('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
+            // Disable both buttons to prevent concurrent print jobs
+            $genLabelButton.prop('disabled', true);
+            $testPrintButton.prop('disabled', true);
+
+            // Show loading spinner on the clicked button
+            $button.text(`${btn_generating}… `).append('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
 
             // Make an ajax call to generate labels
             const response = await RZLP.ajax("generateTubeLabels", { ptid, visit_num: visitNum });
-            const labels = JSON.parse(response);
+            let labels = JSON.parse(response);
+
+            if (testPrint) {
+                // Keep only the first label of each type (one per sample type)
+                const seenTypes = new Set();
+                labels = labels.filter(item => {
+                    if (seenTypes.has(item.type)) return false;
+                    seenTypes.add(item.type);
+                    return true;
+                });
+            }
+
             const zplLabels = labels.map(item => generateZplLabel(item.ptid, item.type, item.barcode_str));
             const zplSheet = zplLabels.join('');
 
@@ -139,10 +169,18 @@ $(document).ready(function () {
             console.error('Error generating labels:', error);
             alert(alert_error_generating);
         } finally {
-            // Reset the button text and enable it
-            $genLabelButton.prop('disabled', false).text(btn_generate_labels);
+            // Reset the clicked button text and re-enable both buttons
+            $button.text(buttonLabel);
+            $genLabelButton.prop('disabled', false);
+            $testPrintButton.prop('disabled', false);
         }
-    });
+    };
+
+    // Attach click listener to the "Generate biospecimen labels" button
+    $genLabelButton.on('click', () => handlePrintClick($genLabelButton, btn_generate_labels));
+
+    // Attach click listener to the "Test print" button
+    $testPrintButton.on('click', () => handlePrintClick($testPrintButton, btn_test_print, true));
 });
 
 // Generate ZPL Label

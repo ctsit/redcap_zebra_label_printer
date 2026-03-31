@@ -35,18 +35,21 @@ class ExternalModule extends AbstractExternalModule
     const PTID_FIELD = "ptid_field";
     const VISIT_NUM_FIELD = "visit_num_field";
 
-    private function containsTag(string $targetTag, ?string $tags): bool
+    private function getTagValue(string $targetTag, ?string $tags): ?string
     {
-        return (isset($tags)) ? in_array($targetTag, explode(' ', $tags)) : false;
+        if (!isset($tags)) return null;
+        $pattern = '/(?:^|\s)' . preg_quote($targetTag, '/') . '(?:=["\']?([^"\'\\s]*)["\']?)?(?:\s|$)/';
+        if (preg_match($pattern, $tags, $matches)) {
+            return $matches[1] ?? '';
+        }
+        return null;
     }
 
-    private function isXTypeField(array $field): bool
+    private function containsTag(string $targetTag, ?string $tags): bool
     {
-        $isTextField = $field['element_type'] == 'text';
-        return $isTextField;
-        // $hasDateValidation = in_array($field['element_validation_type'], Validate::$date_validations);
-        // return $isTextField && $hasDateValidation;
+        return $this->getTagValue($targetTag, $tags) !== null;
     }
+
 
     function redcap_module_ajax($action, $payload)
     {
@@ -74,14 +77,7 @@ class ExternalModule extends AbstractExternalModule
 
     function redcap_every_page_top($project_id)
     {
-        if (Validate::pageIs(Page::ONLINE_DESIGNER) && $project_id) {
-            // Append the action tag in the designer view
-            $this->initializeJavascriptModuleObject();
-            // Add language strings to the javascript object
-            $this->tt_transferToJavascriptModuleObject();
-            $this->tt_addToJavascriptModuleObject('zebraLabelGenTag', self::ZEBRA_LABEL_PRINTER_TAG);
-            $this->includeJs('js/addActionTag.js');
-        } else if (Validate::pageIsIn(array(Page::DATA_ENTRY, Page::SURVEY, Page::SURVEY_THEME)) && isset($_GET['id'])) {
+        if (Validate::pageIsIn(array(Page::DATA_ENTRY, Page::SURVEY, Page::SURVEY_THEME)) && isset($_GET['id'])) {
             // Handle the logic of the action tag on data entry
             global $Proj;
             $instrument = $_GET['page'];
@@ -92,12 +88,10 @@ class ExternalModule extends AbstractExternalModule
             // the first field will have the button appended to it.
             foreach (array_keys($Proj->forms[$instrument]['fields']) as $field_name) {
                 $field = $Proj->metadata[$field_name];
-                if ($this->isXTypeField($field)) {
-                    $action_tags = $field['misc'];
+                $action_tags = $field['misc'];
 
-                    if ($this->containsTag(self::ZEBRA_LABEL_PRINTER_TAG, $action_tags)) {
-                        array_push($zebraLabelGenFields, $field_name);
-                    }
+                if ($this->containsTag(self::ZEBRA_LABEL_PRINTER_TAG, $action_tags)) {
+                    array_push($zebraLabelGenFields, $field_name);
                 }
             }
 
@@ -105,7 +99,9 @@ class ExternalModule extends AbstractExternalModule
                 $this->initializeJavascriptModuleObject();
                 // Add language strings to the javascript object
                 $this->tt_transferToJavascriptModuleObject();
-                $emData = ["tagId" => self::ZEBRA_LABEL_PRINTER_TAG, "hasMultipleTags" => count($zebraLabelGenFields) > 1, "zebraLabelGenFieldId" => $zebraLabelGenFields[0], "ptidFieldId" => $this->getProjectSetting(self::PTID_FIELD), "visitNumFieldId" => $this->getProjectSetting(self::VISIT_NUM_FIELD)];
+                $firstFieldTags = $Proj->metadata[$zebraLabelGenFields[0]]['misc'];
+                $tagValue = $this->getTagValue(self::ZEBRA_LABEL_PRINTER_TAG, $firstFieldTags);
+                $emData = ["tagId" => self::ZEBRA_LABEL_PRINTER_TAG, "hasMultipleTags" => count($zebraLabelGenFields) > 1, "zebraLabelGenFieldId" => $zebraLabelGenFields[0], "ptidFieldId" => $this->getProjectSetting(self::PTID_FIELD), "visitNumFieldId" => $this->getProjectSetting(self::VISIT_NUM_FIELD), "tagValue" => $tagValue];
                 $this->tt_addToJavascriptModuleObject('emData', $emData);
                 $this->includeJs('js/generateTubeLabels.bundle.js');
             }
@@ -186,22 +182,17 @@ class ExternalModule extends AbstractExternalModule
             [
                 'name' => 'buffy coat',
                 'symbol' => 'BC',
-                'count' => 5,
+                'count' => 3,
             ],
             [
                 'name' => 'paxgene',
                 'symbol' => 'PG',
-                'count' => 5,
+                'count' => 2,
             ],
             [
                 'name' => 'plasma',
                 'symbol' => 'P',
-                'count' => 5,
-            ],
-            [
-                'name' => 'serum',
-                'symbol' => 'S',
-                'count' => 5,
+                'count' => 25,
             ]
         ];
 
