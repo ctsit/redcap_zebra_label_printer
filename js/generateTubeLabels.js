@@ -127,8 +127,12 @@ $(document).ready(function () {
             const visitNum = $visitNumInputField.val();
             const btn_generating = module.tt('btn_generating');
 
-            // Show loading spinner
-            $button.prop('disabled', true).text(`${btn_generating}… `).append('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
+            // Disable both buttons to prevent concurrent print jobs
+            $genLabelButton.prop('disabled', true);
+            $testPrintButton.prop('disabled', true);
+
+            // Show loading spinner on the clicked button
+            $button.text(`${btn_generating}… `).append('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
 
             // Make an ajax call to generate labels
             const response = await RZLP.ajax("generateTubeLabels", { ptid, visit_num: visitNum });
@@ -165,8 +169,10 @@ $(document).ready(function () {
             console.error('Error generating labels:', error);
             alert(alert_error_generating);
         } finally {
-            // Reset the button text and enable it
-            $button.prop('disabled', false).text(buttonLabel);
+            // Reset the clicked button text and re-enable both buttons
+            $button.text(buttonLabel);
+            $genLabelButton.prop('disabled', false);
+            $testPrintButton.prop('disabled', false);
         }
     };
 

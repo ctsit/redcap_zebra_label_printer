@@ -19,7 +19,7 @@ The module is not yet in the VUMC's REDCap Repo. All installation must be done m
 - Clone this repo into to `<redcap-root>/modules/redcap_zebra_label_printer_v0.0.0`.
 
 ## Introduction
-The __REDCap Zebra Label Printer__ external module prints a preprogrammed layout of 23 labels onto __DFP-103 Cryogenic Labels__. The layout is designed to facilitate blood draw and processing for sites within the 1Florida Alzheimer's Disease Research Center. It has multiple labels for each of serum, plasma, paxgene, buffy coat, and blood. The module prints this layout on each label.
+The __REDCap Zebra Label Printer__ external module prints a preprogrammed layout of 33 labels onto __DFP-103 Cryogenic Labels__. The layout is designed to facilitate blood draw and processing for sites within the 1Florida Alzheimer's Disease Research Center. It has multiple labels for each of plasma, paxgene, buffy coat, and blood. The module prints this layout on each label.
 
 > ![](./img/DFP-103_image.png) 
 
