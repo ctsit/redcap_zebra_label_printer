@@ -2,7 +2,7 @@
 
 [![DOI](https://zenodo.org/badge/761563782.svg)](https://doi.org/10.5281/zenodo.15185893)
 
-The REDCap Zebra Label Printer external module extends REDCap to print labels to Zebra printers using data from a REDCap record, a ZPL layout, and a printing plan. The first version of the module has the ZPL layout and print plan hard-coded into it. Future versions will provide more configurability.
+The REDCap Zebra Label Printer external module extends REDCap to print labels to Zebra printers using data from a REDCap record, a ZPL layout, and a printing plan. The current version of the module hard-codes the ZPL layout and print plan. Future versions will provide more configurability.
 
 ## Prerequisites
  - REDCap >= 14.0.2
@@ -27,7 +27,7 @@ The labels are printed in a long strip.
 
 > ![](./img/DFP-103_sample_6_labels.png)
 
-The module adds a button to a REDCap form field to allow printing of a 23-label set for that record and event. The `@ZEBRA-LABEL-PRINTER` action tag positions the button on any field where it is used.
+The module adds a button to a REDCap form field to allow printing of a 33-label set for that record and event. The `@ZEBRA-LABEL-PRINTER` action tag positions the button on any field where it is used.
 
 > ![](./img/gen_label_button.png)
 
