@@ -1,3 +1,12 @@
+# redcap_zebra_label_printer 0.5.0 (released 2026-03-31)
+- Add a test print feature activated by `@ZEBRA-LABEL-PRINTER="test"` (@pbchase, #40)
+- Change label counts to the highest common denominator for each specimen type (@pbchase, #40)
+- Allow all field types to display the generate labels button (@pbchase, #39)
+- Address Dependabot alerts #1, #2, #6 (@pbchase, #38)
+- Remove babel-loader (@pbchase, #38)
+- Refactor action tag docs into config.json format (@pbchase, #36)
+- Add CLAUDE.md to document module structure and standards (@pbchase, #36)
+
 # redcap_zebra_label_printer 0.4.0 (released 2025-06-24)
 - Add i18n support (@saipavan10-git, @pbchase, #14, #16, #22)
 - Add CITATION.cff (@pbchase)
