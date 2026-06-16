@@ -1,3 +1,7 @@
+# redcap_zebra_label_printer 0.5.1 (released 2026-06-16)
+- Bump fast-uri from 3.0.5 to 3.1.2 (@pbchase, #41)
+- Fix typos in the README.md (@pbchase)
+
 # redcap_zebra_label_printer 0.5.0 (released 2026-03-31)
 - Add a test print feature activated by `@ZEBRA-LABEL-PRINTER="test"` (@pbchase, #40)
 - Change label counts to the highest common denominator for each specimen type (@pbchase, #40)
